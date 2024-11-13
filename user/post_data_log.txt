@@ -1,0 +1,9 @@
+Array
+(
+    [total] => undefined
+    [correct] => undefined
+    [wrong] => undefined
+    [score] => undefined
+    [user] => undefined
+)
+Total: undefined, Correct: undefined, Wrong: undefined, Score: undefined, User: undefined

@@ -1,0 +1,357 @@
+user/slide.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Cover Flow Carousel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(../image/bg.png);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden; /* Hide scrollbars */
+        }
+        #header{
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+        }   
+
+        .carousel {
+            perspective: 600px; /* Added perspective for 3D effect */
+            width: 80%;
+            max-width: 600px;
+            position: relative; /* Added for positioning controls */
+        }
+
+        .carousel::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; /* Adjust as needed */
+            left: 0;
+            width: 100%;
+            height: 100px; /* Height of the reflection */
+            background: inherit; /* Use the same background as the carousel */
+            opacity: 0.5; /* Adjust opacity for reflection effect */
+            transform: scaleY(-1); /* Flip the reflection */
+            filter: blur(5px); /* Optional: add blur for a smoother reflection */
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d; /* Enable 3D transformations */
+            width: 100%; /* Adjusted width */
+        }
+
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            border-radius: 50px;
+            opacity: 0.5; /* Set default opacity for all slides */
+            transition: opacity 0.5s ease, transform 0.5s ease; /* Added transform transition */
+            overflow: visible; /* Ensure reflection doesn't overflow */
+        }
+
+        .slide.active {
+            opacity: 1; /* Full opacity for the active slide */
+            transform: rotateY(0deg) translateZ(50px); /* Bring active slide to front */
+            z-index: 10; /* Ensure active slide is on top */
+            overflow: visible; /* Ensure overflow is visible */
+        }
+
+        .slide.previous {
+            opacity: 0.8; /* Lower opacity for previous slide */
+            transform: rotateY(-30deg) translateZ(20px); /* Rotate previous slide */
+            z-index: 1;
+            overflow: visible; /* Ensure previous slides are below the active slide */
+        }
+
+        .slide.next {
+            opacity: 0.8; /* Lower opacity for next slide */
+            transform: rotateY(30deg) translateZ(20px); /* Rotate next slide */
+            z-index: 1;
+            overflow: visible; /* Ensure next slides are below the active slide */
+        }
+
+        .slide img {
+            width: 100%; /* Adjusted to fill the slide */
+            height: 400px; /* Adjusted height */
+            border-radius: 50px;
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: gray;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .active {
+            background-color: white;
+        }
+
+        .controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .control {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 110%;
+        }
+
+        .reflection {
+            position: absolute;
+            top: 100%; /* Position below the slide */
+            left: 0;
+            width: 100%;
+            height: 30%; /* Match the height of the slide */
+            background: inherit; /* Use the same background as the slide */
+            opacity: 0.3; /* Adjust opacity for reflection effect */
+            transform: scaleY(-1) translateX(20px) translateY(20px); /* Flip the reflection and shift it diagonally */
+            filter: blur(5px); /* Optional: add blur for a smoother reflection */
+            z-index: -5;
+            transform: translateZ(90px);  /* Ensure reflection is behind the image */
+        }
+        .start-exam {
+            position: absolute; /* Positioning the button absolutely */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust position to truly center */
+            background-color: rgba(0, 0, 0, 0.7); /* Background color for visibility */
+            color: white; /* Text color */
+            border: none; /* No border */
+            padding: 10px 20px; /* Padding for the button */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            z-index: 1; /* Ensure button is above other elements */
+            width: 800px;
+            height: 450px;
+            background-color: transparent;
+            color:black;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Added Header Menu -->
+<header id="header">
+    <nav>
+        <ul style="list-style-type: none; padding: 0; display: flex; justify-content: left; background-color: rgba(0, 0, 0, 0.7); padding-left: 100px;">
+            <h1 style="color: white; font-size: 30px; font-weight: bold;">RIGHT DRIVING</h1>
+            <li style="margin: 30px 15px;"><a href="#home" style="color: white; text-decoration: none;">Home</a></li>
+            <li style="margin: 30px 15px;"><a href="#about" style="color: white; text-decoration: none;">About</a></li>
+            <li style="margin: 30px 15px;"><a href="#services" style="color: white; text-decoration: none;">Services</a></li>
+            <li style="margin: 30px 15px;"><a href="#contact" style="color: white; text-decoration: none;">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+<!-- End of Header Menu -->
+
+<div class="carousel">
+    <div class="slides" id="slides">
+        <div class="slide active" id="slide1">
+            
+                <img src="../image/93 (1).png" alt="Exam Type 1">
+            
+            <div class="caption">93 Exam</div>
+           
+            <div class="reflection"></div>
+        </div>
+        <div class="slide" id="slide2">
+            
+                <img src="../image/93 (2).png" alt="Exam Type 2">
+           
+            <div class="caption">93 Exam</div>
+            <div class="reflection"></div>
+        </div>
+        <div class="slide" id="slide3">
+           
+                <img src="../image/93 (3).png" alt="Exam Type 3">
+           
+            <div class="caption">93 Exam</div>
+            <div class="reflection"></div>
+        </div>
+        <div class="slide" id="slide4">
+            
+                <img src="../image/93 (4).png" alt="Exam Type 4">
+            
+            <div class="caption">93 Exam</div>
+            <div class="reflection"></div>
+        </div>
+        <div class="slide" id="slide5">
+           
+                <img src="../image/93 (5).png" alt="Exam Type 5">
+            
+            <div class="caption">93 Exam</div>
+            <div class="reflection"></div>
+        </div>
+        <div class="slide" id="slide6">
+           
+                <img src="../image/93 (6).png" alt="Exam Type 6">
+           
+            <div class="caption">93 Exam</div>
+            <div class="reflection"></div>
+        </div>
+        <div class="slide" id="slide7">
+            
+                <img src="../image/93 (2).png" alt="Exam Type 7">
+            
+            <div class="caption">93 Exam</div>
+            <div class="reflection"></div>
+        </div>
+    </div>
+    <div class="indicators" id="indicators"></div>
+    <div class="controls">
+        <button class="control" id="prev"><i class="fas fa-chevron-left"></i>PREVIOUS</button>
+        <button class="control" id="next">NEXT<i class="fas fa-chevron-right"></i></button>
+        <button class="start-exam" id="startExamButton" onclick="startExam(getCurrentSlideLink())">Start Exam</button>
+    </div>
+</div>
+
+<script>
+    let currentIndex = 1;
+    const slides = document.getElementById('slides');
+    const totalSlides = document.querySelectorAll('.slide').length;
+    const indicatorsContainer = document.getElementById('indicators');
+    let currentSlideLink = '';
+
+    function updateCarousel() {
+        slides.style.transform = 'translateX(' + (-currentIndex * 100) + '%)';
+        updateIndicators();
+        updateSlideVisibility(); // Call to update slide visibility
+    }
+
+    function updateIndicators() {
+        indicatorsContainer.innerHTML = '';
+        for (let i = 0; i < totalSlides; i++) {
+            const indicator = document.createElement('div');
+            indicator.classList.add('indicator');
+            if (i === currentIndex) {
+                indicator.classList.add('active');
+            }
+            indicator.addEventListener('click', () => {
+                currentIndex = i;
+                updateCarousel();
+            });
+           
+            indicatorsContainer.appendChild(indicator);
+        }
+    }
+
+    function autoSlide() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateCarousel();
+        getCurrentSlideLink(currentIndex+1);
+    }
+
+    // Start auto sliding every 3 seconds
+    setInterval(autoSlide, 13000);
+    updateCarousel();
+
+    function updateSlideVisibility() {
+        const allSlides = document.querySelectorAll('.slide');
+        allSlides.forEach((slide, index) => {
+            slide.classList.remove('previous', 'next'); // Remove previous/next classes
+            if (index === currentIndex) {
+                slide.classList.add('active'); // Active slide
+                document.getElementById('startExamButton').textContent = slide.id; // Set button text to active slide ID
+            } else if (index === (currentIndex - 1 + totalSlides) % totalSlides) {
+                slide.classList.add('previous'); // Previous slide
+            } else if (index === (currentIndex + 1) % totalSlides) {
+                slide.classList.add('next'); // Next slide
+            }
+        });
+        getCurrentSlideLink(currentIndex);
+    }
+
+    // Next and Previous button functionality
+    document.getElementById('next').addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateCarousel();
+      
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+       
+    });
+
+    function startExam(link) {
+        window.location.href = link; // Redirect to the exam link
+    }
+
+    function getCurrentSlideLink(currentIndex) {
+        const activeSlide = document.querySelector('.slide.active');
+        const slideId = activeSlide ? activeSlide.id : 'default_link'; // Get the active slide ID
+        switch(currentIndex){      
+            case 0:
+               currentSlideLink = 'showquiz.php'; 
+               break;
+            case 1: 
+                currentSlideLink = 'showquiz.php';
+                break;
+            case 2:
+                currentSlideLink = 'showquiz.php';
+                break;
+            case 3:
+                currentSlideLink = 'showquiz.php';
+                break;
+            case 4:
+                currentSlideLink = 'showquiz.php';
+                break;
+            case 5:
+                currentSlideLink = 'showquiz.php';
+                break;
+            case 7:
+                currentSlideLink = 'showquiz.php';
+                break;
+        };
+        console.log("Active Slide ID:", currentSlideLink); // Debugging line to check active slide ID
+        return currentSlideLink; // Return the link or a default if not found
+    }
+</script>
+
+</body>
+</html>
